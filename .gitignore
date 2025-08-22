@@ -7,3 +7,14 @@
 video
 audio
 .idea
+log
+text
+
+
+# config file
+
+.env
+
+
+# Apple files
+.DS_Store
