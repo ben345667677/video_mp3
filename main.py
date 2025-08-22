@@ -2,13 +2,14 @@ import os
 import subprocess
 from pydub import AudioSegment, silence
 
-VIDEO_DIR = "video"
-AUDIO_DIR = "audio"
-CHUNK_LENGTH_MS = 14 * 60 * 1000  # 14 דקות במילישניות
-LOOKBACK_MS = 60 * 1000           # דקה אחרונה לבדוק בה שקט
-SILENCE_THRESH_DB = -40           # סף שקט (dBFS)
-SILENCE_MIN_MS = 200              # מינימום שקט 0.2 שניות
-MIN_SEGMENT_MS = 5000             # מינימום קטע שמור (5 שניות)
+# 📂 הגדרות ראשיות
+VIDEO_DIR = "video"                           # תיקיית קלט של וידאו
+AUDIO_DIR = "audio"                           # תיקיית פלט לאודיו
+CHUNK_LENGTH_MS = 12 * 60 * 1000              # 12 דקות במילישניות
+LOOKBACK_MS = 60 * 1000                       # דקה לבדוק שקט בסוף מקטע
+SILENCE_THRESH_DB = -40                       # סף שקט (dBFS)
+SILENCE_MIN_MS = 200                          # שקט מינימלי: 0.2 שניות
+MIN_SEGMENT_MS = 5000                         # מינימום קטע שמור: 5 שניות
 
 def video_to_audio(video_path, audio_path):
     """ממיר וידאו ל-MP3"""
@@ -23,13 +24,13 @@ def split_audio(audio_path, output_dir):
     audio = AudioSegment.from_file(audio_path)
 
     start = 0
-    part = 0
+    part = 1
 
     while start < len(audio):
         end = min(start + CHUNK_LENGTH_MS, len(audio))
         segment = audio[start:end]
 
-        # נחפש שקט בדקה האחרונה של המקטע
+        # חיפוש שקט בדקה האחרונה של המקטע
         search_start = max(0, len(segment) - LOOKBACK_MS)
         last_minute = segment[search_start:]
         silence_ranges = silence.detect_silence(
@@ -47,10 +48,10 @@ def split_audio(audio_path, output_dir):
             start = end
             continue
 
-        # חישוב טווח הזמן לשם
+        # חישוב טווח הזמן לשם הקובץ
         start_min = start // 60000
         end_min = (start + len(segment)) // 60000
-        out_name = f"{start_min:04d}-{end_min:04d}min.mp3"
+        out_name = f"{start_min:04d}-{end_min:04d}min-c{part:02d}.mp3"
         out_path = os.path.join(output_dir, out_name)
 
         segment.export(out_path, format="mp3")
@@ -74,7 +75,8 @@ if __name__ == "__main__":
     print(f"🎬 ממיר וידאו לאודיו: {video_file}")
     video_to_audio(video_file, audio_file)
 
-    print("✂️ מפצל לקטעי 14 דקות כרונולוגיים עם חיתוך על שקט...")
+    print("✂️ מפצל לקטעי 12 דקות כרונולוגיים עם חיתוך על שקט...")
     split_audio(audio_file, AUDIO_DIR)
 
     print("🏁 סיימתי! הקבצים נמצאים בתיקיית audio/")
+    
