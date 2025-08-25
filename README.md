@@ -18,7 +18,24 @@ cp .envcopy .env
 
 
 
+---
+# for running the site
 
+go to "Shai" folder and run:
+```bash
+docker build -t lesson-site .
+```
+
+the run
+
+```bash
+docker run -p 8000:8000 lessons-site
+```
+
+the site run on:
+```
+http://localhost:8000
+```
 
 
 ---
