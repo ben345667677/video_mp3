@@ -1,0 +1,18 @@
+*.mp4
+*.mp3
+
+# Files in folders
+input/video/*
+output/audio/*
+output/log/*
+
+# folders
+.venv
+.idea
+
+# config file
+.env
+
+
+# Apple files
+.DS_Store
